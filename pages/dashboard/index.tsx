@@ -21,7 +21,7 @@ import Button from '@app/components/Button';
 import { ICategory } from '@app/components/Dashboard/DashboardDrawer/Category';
 
 import { FakeData } from '@app/components/Dashboard/Chart/fake';
-import { FakeData300 } from '@app/components/Dashboard/Chart/fake300';
+import { FakeData1 } from '@app/components/Dashboard/Chart/fake1';
 import { FakeData15 } from '@app/components/Dashboard/Chart/fake15';
 import PieChart from '@app/components/Dashboard/Chart/PieChart';
 import BarChart from '@app/components/Dashboard/Chart/BarChart';
@@ -210,6 +210,9 @@ class Dashboard extends React.Component<IProps, {}> {
               </DashboardHeader>
               <Button onClick={() => { this.fake = FakeData15; this.setFakeData(); }}>
                 ChangeData
+              </Button>
+              <Button onClick={() => { this.fake = FakeData1; this.setFakeData(); }}>
+                Change One Data point
               </Button>
               <GridLayout
                 className='Dashboard-container layout'

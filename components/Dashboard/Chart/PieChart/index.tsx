@@ -17,78 +17,84 @@ const PieChart: React.SFC<IProps> = (props) => {
         radius = Math.min(width, height) / 2;
         
     const graphRef = useRef(null);
-    const cache = useRef(data);    
-    
-    const createPie: any = d3
-        .pie()
+    const cache = useRef(data.values);
+    const createPie: any = d3.pie()
+        .startAngle(0)
+        .endAngle(2 * Math.PI)
         .value((d: any) => d.value)
         .sort(null);
-
     const createArc = d3
         .arc()
-        .innerRadius(radius - 10)
-        .outerRadius(0);
+        .innerRadius(0)
+        .outerRadius(radius - 10);
+    const createLabelArc = d3
+        .arc()
+        .innerRadius(radius * 0.4)
+        .outerRadius(radius - 10);
 
     useEffect(() => drawChart(), [props]);
-    
-    const drawChart = () => {
 
+    const drawChart = () => {
         if (data == null) return;
-        
         const curData = createPie(data.values);
-        const prevData = createPie(cache.current.values);
-        
+        const prevData = createPie(cache.current);
+
         const group = d3.select(graphRef.current);
-        const groupWithData = group.selectAll("g.arc").data(curData);
         const tooltip = group.append('g');
+        const groupWithData = group.selectAll("g.arc").data(curData);
         groupWithData.exit().remove();
+        
         const groupWithUpdate = groupWithData
             .enter()
             .append("g")
             .attr("class", "arc");
-
         const path = groupWithUpdate
             .append("path")
             .merge(groupWithData.select("path.arc"));
 
-        const arcTween: any = (d: any, i: any) => {            
+        const arcTween: any = (d: any, i: any) => {
             const interpolator = d3.interpolate(prevData[i], d);
             return (t: any) => createArc(interpolator(t));
         };
+
         path
             .attr("class", "arc")
-            .attr("fill", (d: any, i) => d.data.color)
-            .attr("stroke", 'white')
-            .attr("stroke-width", 2)
             .on("mouseover", (d: any) => {
-                tooltip.attr('transform', "translate(" + createArc.centroid(d) + ")").call(callout, d);
+                tooltip.attr('transform', "translate(" + createLabelArc.centroid(d) + ")").call(callout, d);
                 tooltip.raise();
             })
             .on("mouseout", () => tooltip.call(callout, null))
+            .attr("fill", (d:any) => d.data.color)
+            .attr('stroke', '#fff')
             .transition()
-            .attrTween("d", arcTween)
-
+            .attrTween("d", arcTween);
         if (data.values.length < showLimit) {
-            const text = groupWithUpdate
+            const label = groupWithUpdate
                 .append("text")
-                .merge(groupWithData.select("text"));
-            text
-                .attr("text-anchor", "middle")
-                .attr("alignment-baseline", "middle")            
+                .attr('class', 'pie-label-text')
+                .merge(groupWithData.select(".pie-label-text"));
+            label
+                .attr("text-anchor", "middle")                
                 .style("fill", "white")
-                .style("font-size", 12)
+                .style("font-size", '10pt')
                 .transition()
-                .attr("transform", (d: any) => `translate(${createArc.centroid(d)})`)
-                .text((d: any) => d.data.label)
+                .attr("transform", (d: any) => `translate(${createLabelArc.centroid(d)})`)
+                .text((d: any) => d.data.label)                
             if (showValue) {
-                groupWithData.append("text")
-                    .attr("transform", (d: any) => "translate(" + createArc.centroid(d)[0] + "," + (createArc.centroid(d)[1] + 15) + ")")
+                const value = groupWithUpdate
+                    .append("text")
+                    .attr('class', 'pie-value-text')
+                    .merge(groupWithData.select(".pie-value-text"));
+                value
+                    .attr("transform", (d: any) => `translate(${createLabelArc.centroid(d)})`)
                     .attr('fill', "white")
-                    .attr('font-size', '12pt')
+                    .attr('dy', '1em')
+                    .attr('font-size', '10pt')
                     .attr('text-anchor', 'middle')
                     .text((d: any) => (d.data.value));
             }
-        }
+        }        
+        
         const callout = (g: any, d: any) => {
             if (!d) {
                 g.selectAll("*").remove();
@@ -119,13 +125,13 @@ const PieChart: React.SFC<IProps> = (props) => {
 
             const { width: tw, height: th } = text.node().getBBox();
 
-            text.attr("transform", 'translate(0, 5)')
+            text.attr("transform", 'translate(10, -5)')
             path
-                .attr("transform", 'translate(-10,' + (th / 2 - 10) + ')')
+                .attr("transform", 'translate(0,' + (0) + ')')
                 .attr("d", 'M0,0l5,-5v' + (-(th - 10) / 2) + 'h' + (tw + 10) + 'v' + th + 'h' + (-(tw + 10)) + 'v' + (-(th - 10) / 2) + 'l-5,-5z')
 
-        }
-        cache.current = props.data;
+        }   
+        cache.current = data.values;     
     }
     return (
         <svg className={"pieChart" + idx_str} width={width} height={height}>

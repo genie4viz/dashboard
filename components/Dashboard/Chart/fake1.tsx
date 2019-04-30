@@ -1,14 +1,14 @@
 
 import {IChartData} from '.';
 
-export const FakeData: IChartData[] = [
+export const FakeData1: IChartData[] = [
     {
         "type": 'BAR',
         "name": 'Bar Chart',
         "XAxis": "Revenue",
         "YAxis": "Sum Profit",
         "values": [{"label":"Raff","value":106,"color":"#be7ca6"},
-        {"label":"Pia","value":469,"color":"#eae17b"},
+        {"label":"Pia","value":69,"color":"#eae17b"},
         {"label":"Dore","value":221,"color":"#6ad6aa"},
         {"label":"Gunar","value":156,"color":"#42119b"},
         {"label":"Adara","value":279,"color":"#84efe9"},
@@ -50,7 +50,7 @@ export const FakeData: IChartData[] = [
         {"label":"Kristel","value":187,"color":"#7b44f3"},
         {"label":"Cara","value":372,"color":"#4ccbb7"},
         {"label":"Noel","value":449,"color":"#104f26"},
-        {"label":"Ileane","value":354,"color":"#73746a"},
+        {"label":"Ileane","value":54,"color":"#73746a"},
         {"label":"Jany","value":224,"color":"#d7d215"}]
     }, {
         "type": 'LINE',
@@ -58,7 +58,7 @@ export const FakeData: IChartData[] = [
         "XAxis": "Revenue",
         "YAxis": "Sum Profit",
         "values": [{"label":"Raff","value":106,"color":"#be7ca6"},
-        {"label":"Pia","value":469,"color":"#eae17b"},
+        {"label":"Pia","value":69,"color":"#eae17b"},
         {"label":"Dore","value":221,"color":"#6ad6aa"},
         {"label":"Gunar","value":156,"color":"#42119b"},
         {"label":"Adara","value":279,"color":"#84efe9"},
