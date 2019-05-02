@@ -11,8 +11,7 @@ interface IProps {
     height: number;
 }
 const LineChart: React.SFC<IProps> = (props) => {
-    const { data, isCountChart, idx, showLimit, width, height } = props;
-
+    const { data, isCountChart, idx, showLimit, width, height } = props;    
     const idx_str = idx != null ? idx : '';
     const svgRef = useRef(null);
     const getConvertedData = (w_data: any) => {
@@ -48,8 +47,8 @@ const LineChart: React.SFC<IProps> = (props) => {
             rw = width - margins.right - margins.left,
             rh = height - margins.top - margins.bottom;
         let min: number = 0,// d3.min
-            max: any = d3.max(curData, (d: any) => d.value);
-            // step = Math.floor(curData.length / showLimit);
+            max: any = d3.max(curData, (d: any) => d.value),
+            step = Math.floor(curData.length / showLimit);
 
         let x: any = d3
                 .scaleBand()
@@ -82,10 +81,10 @@ const LineChart: React.SFC<IProps> = (props) => {
             .selectAll('text')
             .attr('class', (d, i) => 'line-x-text' + d + i)
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
-            // .attr('opacity', (d: any, i) =>  i % step == 0 ? 1 : 0)
+            .attr('opacity', (d: any, i) =>  i % step == 0 ? 1 : 0)
             .style("font", "300 10px Arial")
-            .attr('text-anchor', curData.length > showLimit ? 'start' : 'middle')            
-            .attr('transform', curData.length > showLimit ? 'rotate(45)' : 'rotate(0)');
+            .attr('text-anchor', showLimit < curData.length ? 'start' : 'middle')            
+            .attr('transform', showLimit < curData.length ? 'rotate(45)' : 'rotate(0)');
         xArea
             .selectAll('path')
             .attr('opacity', 0)
@@ -146,13 +145,13 @@ const LineChart: React.SFC<IProps> = (props) => {
             .on("mouseover", (d: any, i: any) => {
                 d3.select('.dot' + idx_str + i).attr('r', 5);
                 tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth() / 2) + ',' + y(d.value) + ')').call(callout, d, i);                
-                // graphArea.select('.line-x-text' + d.label + i + i).attr('opacity', 1);
+                // graphArea.select('.line-x-text' + d.label + i).attr('opacity', 1);
                 tooltip.raise();
             })
             .on("mouseout", (d: any, i: any) => {
                 d3.select('.dot' + idx_str + i).attr('r', 3);
                 // if(i % step != 0)
-                    // graphArea.select('.line-x-text' + d.label + i + i).attr('opacity', 0);
+                //     graphArea.select('.line-x-text' + d.label + i).attr('opacity', 0);
                 tooltip.call(callout, null);
             })
             .transition()

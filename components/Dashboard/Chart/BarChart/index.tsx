@@ -74,15 +74,15 @@ const BarChart: React.SFC<IProps> = (props) => {
 
         graphArea.select('.xArea').remove();
         let xArea = graphArea.append('g').attr('class', 'xArea')
-            .attr('transform', "translate(0," + rh + ")")
-        // let step = Math.floor(c_data.length / showLimit);
+            .attr('transform', "translate(0," + rh + ")");
+        let step = Math.floor(c_data.length / showLimit);
         xArea
             .attr('class', 'x axis')
             .call(xAxis)
             .selectAll('text')
             .attr('class', (d, i) => 'bar-x-text' + d + i)
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
-            // .attr('opacity', (d: any, i) =>  i % step == 0 ? 1 : 0)
+            .attr('opacity', (d: any, i) =>  i % step == 0 ? 1 : 0)
             .style("font", "300 10px Arial")
             .attr('text-anchor', curData.length > showLimit ? 'start' : 'middle')            
             .attr('transform', curData.length > showLimit ? 'rotate(45)' : 'rotate(0)');
