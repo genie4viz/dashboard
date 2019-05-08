@@ -11,8 +11,9 @@ interface IProps {
     height: number;
 }
 const LineChart: React.SFC<IProps> = (props) => {
-    const { data, isCountChart, idx, showLimit, width, height } = props;    
+    const { data, isCountChart, idx, showLimit, width, height } = props;
     const idx_str = idx != null ? idx : '';
+    const SMALL_SIZEY = 200;
     const svgRef = useRef(null);
     const getConvertedData = (w_data: any) => {
         let c_data = [];
@@ -33,13 +34,13 @@ const LineChart: React.SFC<IProps> = (props) => {
     const c_data = getConvertedData(data.values);
     const cache = useRef(c_data);
 
-    useEffect(() => drawChart(), [props]);
+    useEffect(() => drawChart(), [width, height, data]);
 
     const drawChart = () => {
         if (c_data == null) return;
         let curData = c_data;
-        let prevData = cache.current;        
-        if(curData.length != prevData.length || isCountChart ){
+        let prevData = cache.current;
+        if (curData.length != prevData.length || isCountChart) {
             prevData = revisionPrevData();
         }
 
@@ -51,10 +52,10 @@ const LineChart: React.SFC<IProps> = (props) => {
             step = Math.floor(curData.length / showLimit);
 
         let x: any = d3
-                .scaleBand()
-                .range([0, rw])
-                .domain(curData.map((d: any, i: any) => d.label + i))
-                .padding(0.3),
+            .scaleBand()
+            .range([0, rw])
+            .domain(curData.map((d: any, i: any) => d.label + i))
+            .padding(0.3),
             y = d3
                 .scaleLinear()
                 .domain([min, max])
@@ -71,7 +72,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             .append("g").attr('class', 'graphArea')
             .attr('transform', "translate(" + (margins.left) + "," + (margins.top) + ")")
         const tooltip = graphArea.append('g');
-        
+
         graphArea.select('.xArea').remove();
         let xArea = graphArea.append('g').attr('class', 'xArea')
             .attr('transform', "translate(0," + rh + ")")
@@ -81,9 +82,9 @@ const LineChart: React.SFC<IProps> = (props) => {
             .selectAll('text')
             .attr('class', (d, i) => 'line-x-text' + d + i)
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
-            .attr('opacity', (d: any, i) =>  i % step == 0 ? 1 : 0)
+            .attr('opacity', (d: any, i) => i % step == 0 ? 1 : 0)
             .style("font", "300 10px Arial")
-            .attr('text-anchor', showLimit < curData.length ? 'start' : 'middle')            
+            .attr('text-anchor', showLimit < curData.length ? 'start' : 'middle')
             .attr('transform', showLimit < curData.length ? 'rotate(45)' : 'rotate(0)');
         xArea
             .selectAll('path')
@@ -108,7 +109,7 @@ const LineChart: React.SFC<IProps> = (props) => {
         let valueline: any = d3.line()
             .x((d: any, i) => x(d.label + i) + x.bandwidth() / 2)
             .y((d: any) => y(d.value))
-            .curve(d3.curveMonotoneX)        
+            .curve(d3.curveMonotoneX)
 
         let line_group: any = graphArea.append("g")
             .append('path')
@@ -123,7 +124,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             .data(prevData)
             .enter()
             .append('circle')
-            .attr('class', (d:any, i: any) => 'dot' + idx_str + i)
+            .attr('class', (d: any, i: any) => 'dot' + idx_str + i)
             .attr("cx", (d: any, i) => x(d.label + i) + x.bandwidth() / 2)
             .attr("cy", (d: any) => y(d.value))
             .attr("r", 3)
@@ -138,13 +139,13 @@ const LineChart: React.SFC<IProps> = (props) => {
             .attr("d", valueline)
             .attr("fill", "none")
             .attr("stroke", 'steelblue')
-            .attr("stroke-width", 2)            
+            .attr("stroke-width", 2)
 
         dot_group
             .data(curData)
             .on("mouseover", (d: any, i: any) => {
                 d3.select('.dot' + idx_str + i).attr('r', 5);
-                tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth() / 2) + ',' + y(d.value) + ')').call(callout, d, i);                
+                tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth() / 2) + ',' + y(d.value) + ')').call(callout, d, i);
                 // graphArea.select('.line-x-text' + d.label + i).attr('opacity', 1);
                 tooltip.raise();
             })
@@ -157,35 +158,38 @@ const LineChart: React.SFC<IProps> = (props) => {
             .transition()
             .duration(1000)
             .attr("cx", (d: any, i: any) => x(d.label + i) + x.bandwidth() / 2)
-            .attr("cy", (d: any) => y(d.value))        
+            .attr("cy", (d: any) => y(d.value))
 
-        d3.select(svgRef.current)
-            .append("text")
-            .attr("x", margins.left)
-            .attr("y", margins.top)
-            .attr('dy', '-0.5em')
-            .attr('font-size', '16pt')
-            .attr('fill', 'black')
-            .style("text-anchor", "start")
-            .text(data.name)
 
-        d3.select(svgRef.current).append("text")
-            .attr("x", margins.left + width / 2)
-            .attr("y", height)
-            .attr('font-size', '12pt')
-            .attr('fill', 'black')
-            .style("text-anchor", "end")
-            .text(data.XAxis)
+        if (height > SMALL_SIZEY) {
+            d3.select(svgRef.current)
+                .append("text")
+                .attr("x", margins.left)
+                .attr("y", margins.top)
+                .attr('dy', '-0.5em')
+                .attr('font-size', '16pt')
+                .attr('fill', 'black')
+                .style("text-anchor", "start")
+                .text(data.name)
 
-        d3.select(svgRef.current).append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -height / 2)
-            .attr("y", 15)
-            .attr("dy", ".71em")
-            .attr('font-size', '12pt')
-            .attr('fill', 'black')
-            .style("text-anchor", "middle")
-            .text(data.YAxis)
+            d3.select(svgRef.current).append("text")
+                .attr("x", margins.left + width / 2)
+                .attr("y", height)
+                .attr('font-size', '12pt')
+                .attr('fill', 'black')
+                .style("text-anchor", "end")
+                .text(data.XAxis)
+
+            d3.select(svgRef.current).append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", 15)
+                .attr("dy", ".71em")
+                .attr('font-size', '12pt')
+                .attr('fill', 'black')
+                .style("text-anchor", "middle")
+                .text(data.YAxis)
+        }
 
         const callout = (g: any, d: any, idx: any) => {
             if (!d) {
@@ -255,9 +259,9 @@ const LineChart: React.SFC<IProps> = (props) => {
         d3.select(svgRef.current).selectAll("*").remove();
         return { top: 30, left: ybox.width + 30, bottom: data.length > showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
     }
-    const revisionPrevData = () => {        
+    const revisionPrevData = () => {
         let rev_data = [];
-        for(let i = 0; i < c_data.length; i++){
+        for (let i = 0; i < c_data.length; i++) {
             rev_data.push({
                 label: c_data[i].label,
                 value: 0,

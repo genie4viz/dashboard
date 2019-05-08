@@ -15,7 +15,3 @@ export const Container = styled.div`
 export const ContainerContent = styled.div`
   min-height: 100vh;
 `;
-
-export const GridItemDiv = styled.div`
-  background-color: white;
-`;

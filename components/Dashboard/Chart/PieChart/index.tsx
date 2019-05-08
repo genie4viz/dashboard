@@ -15,7 +15,8 @@ const PieChart: React.SFC<IProps> = (props) => {
     const { data, showValue, idx, showLimit, width, height } = props,
         idx_str = idx != null ? idx : '',
         radius = Math.min(width, height) / 2;
-        
+
+    const SMALL_SIZEY = 200;
     const graphRef = useRef(null);
     const cache = useRef(data.values);
     const createPie: any = d3.pie()
@@ -32,7 +33,7 @@ const PieChart: React.SFC<IProps> = (props) => {
         .innerRadius(radius * 0.4)
         .outerRadius(radius - 10);
 
-    useEffect(() => drawChart(), [props]);
+    useEffect(() => drawChart(), [width, height, data]);
 
     const drawChart = () => {
         if (data == null) return;
@@ -43,7 +44,7 @@ const PieChart: React.SFC<IProps> = (props) => {
         const tooltip = group.append('g');
         const groupWithData = group.selectAll("g.arc").data(curData);
         groupWithData.exit().remove();
-        
+
         const groupWithUpdate = groupWithData
             .enter()
             .append("g")
@@ -64,22 +65,22 @@ const PieChart: React.SFC<IProps> = (props) => {
                 tooltip.raise();
             })
             .on("mouseout", () => tooltip.call(callout, null))
-            .attr("fill", (d:any) => d.data.color)
+            .attr("fill", (d: any) => d.data.color)
             .attr('stroke', '#fff')
             .transition()
             .attrTween("d", arcTween);
-        if (data.values.length < showLimit) {
+        if (data.values.length < showLimit && height > SMALL_SIZEY) {
             const label = groupWithUpdate
                 .append("text")
                 .attr('class', 'pie-label-text')
                 .merge(groupWithData.select(".pie-label-text"));
             label
-                .attr("text-anchor", "middle")                
+                .attr("text-anchor", "middle")
                 .style("fill", "white")
                 .style("font-size", '10pt')
                 .transition()
                 .attr("transform", (d: any) => `translate(${createLabelArc.centroid(d)})`)
-                .text((d: any) => d.data.label)                
+                .text((d: any) => d.data.label)
             if (showValue) {
                 const value = groupWithUpdate
                     .append("text")
@@ -93,8 +94,8 @@ const PieChart: React.SFC<IProps> = (props) => {
                     .attr('text-anchor', 'middle')
                     .text((d: any) => (d.data.value));
             }
-        }        
-        
+        }
+
         const callout = (g: any, d: any) => {
             if (!d) {
                 g.selectAll("*").remove();
@@ -130,13 +131,15 @@ const PieChart: React.SFC<IProps> = (props) => {
                 .attr("transform", 'translate(0,' + (0) + ')')
                 .attr("d", 'M0,0l5,-5v' + (-(th - 10) / 2) + 'h' + (tw + 10) + 'v' + th + 'h' + (-(tw + 10)) + 'v' + (-(th - 10) / 2) + 'l-5,-5z')
 
-        }   
-        cache.current = data.values;     
+        }
+        cache.current = data.values;
     }
     return (
         <svg className={"pieChart" + idx_str} width={width} height={height}>
-            <text x={20} y={20} style={{fontSize: '16pt'}}>{data.name}</text>
-            <g ref={graphRef} transform={`translate(${width/2} ${height/2})`}/>
+            {height > SMALL_SIZEY &&
+                <text x={20} y={20} style={{ fontSize: '16pt' }}>{data.name}</text>
+            }
+            <g ref={graphRef} transform={`translate(${width / 2} ${height / 2})`} />
         </svg>
     );
 }

@@ -3,6 +3,7 @@ import {IChartData} from '.';
 
 export const FakeData: IChartData[] = [
     {
+        "key": "1",
         "type": 'BAR',
         "name": 'Bar Chart',
         "XAxis": "Revenue",
@@ -1008,6 +1009,7 @@ export const FakeData: IChartData[] = [
         {"label":"Alex","value":418,"color":"#dab21a"},
         {"label":"Eimile","value":358,"color":"#09e4be"}]
     },{
+        "key": "2",
         "type": 'PIE',
         "name": 'Pie Chart',
         "XAxis": "Revenue",
@@ -2013,6 +2015,7 @@ export const FakeData: IChartData[] = [
         {"label":"Alex","value":418,"color":"#dab21a"},
         {"label":"Eimile","value":358,"color":"#09e4be"}]
     }, {
+        "key": "3",
         "type": 'LINE',
         "name": 'Line Chart',
         "XAxis": "Revenue",

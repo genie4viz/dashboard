@@ -4,21 +4,17 @@ import { ButtonStyle, PanelStyle, ContentScroll, BottomPanel, ContentWrap } from
 import Button from '@app/components/Button';
 
 import DrawerFrame from '@app/components/Dashboard/DrawerFrame';
-import Panel from '@app/components/Dashboard/Panel';
 import SeperateBar from '@app/components/Dashboard/SeperateBar';
 import { FormattedMessage, InjectedIntl, injectIntl } from 'react-intl';
 
-import PieChart from '@app/components/Dashboard/Chart/PieChart';
-import BarChart from '@app/components/Dashboard/Chart/BarChart';
-import LineChart from '@app/components/Dashboard/Chart/LineChart';
-
-import { FakeData } from '@app/components/Dashboard/Chart/fake';
+import { IChartData } from '@app/components/Dashboard/Chart';
 
 import { observable } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import Category, { ICategory } from './Category';
 import { IStyleItem } from './Category/StyleItem';
 import CreateBlockModal from '@app/components/Dashboard/CreateBlockModal';
+import DraggableBlock from './DraggableBlock';
 
 enum DrawerPages {
     BLOCKS = 'block',
@@ -29,7 +25,9 @@ enum DrawerPages {
 interface IProps {
     onClose: () => void;
     categories: ICategory[];
+    chartData: IChartData[];
     intl: InjectedIntl;
+    onDragStart?: (data: IChartData) => void;
 }
 
 
@@ -56,7 +54,7 @@ class DashboardDrawer extends React.Component<IProps> {
     }
 
     public render() {
-        const { onClose, intl: { formatMessage }, categories } = this.props;
+        const { onClose, intl: { formatMessage }, categories, onDragStart, chartData } = this.props;
         return (
             <Fragment>
                 {this.pageShow === DrawerPages.BLOCKS &&
@@ -64,19 +62,10 @@ class DashboardDrawer extends React.Component<IProps> {
                         <SeperateBar />
                         <ContentScroll>
                             <ContentWrap>
-                                {FakeData.map((data, index) => (
-                                    <Panel key={index} css={PanelStyle} width={"436px"}>
-                                        {data.type === "PIE" &&
-                                            <PieChart data={data} width={436} height={300} showValue={true} showLimit={5} />
-                                        }
-                                        {data.type === "BAR" &&
-                                            <BarChart data={data} width={436} height={300} isCountChart={true} showLimit={20} />
-                                        }
-                                        {data.type === "LINE" &&
-                                            <LineChart data={data} width={436} height={300} showLimit={20} />
-                                        }
-                                    </Panel>
+                                {chartData.map((data, index) => (
+                                    <DraggableBlock key={index} data={data} onDragStart={() => { if (onDragStart) onDragStart(data) }}></DraggableBlock>
                                 ))}
+                                <div style={{ width: "436px" }} ></div>
                             </ContentWrap>
                         </ContentScroll>
                         <BottomPanel>

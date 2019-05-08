@@ -87,5 +87,7 @@
   "pageDashboard.drawerValues": "Values",
   "pageDashboard.drawerCount": "Count",
   "pageDashboard.drawerField": "Field",
-  "pageDashboard.drawerAggregate": "Aggregate"
+  "pageDashboard.drawerAggregate": "Aggregate",
+  "pageDashboard.editBlock": "Edit block",
+  "pageDashboard.deleteBlock": "Delete block"
 }

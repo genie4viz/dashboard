@@ -4,6 +4,7 @@ export interface IChartValue {
     color: string;
 }
 export interface IChartData {
+    key: string;
     type: string;
     name: string;
     XAxis: string;

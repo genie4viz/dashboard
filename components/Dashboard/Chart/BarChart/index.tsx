@@ -13,7 +13,7 @@ interface IProps {
 const BarChart: React.SFC<IProps> = (props) => {
     const { data, isCountChart, idx, showLimit, width, height } = props,
         idx_str = idx != null ? idx : '';
-
+    const SMALL_SIZEY = 200;
     const svgRef = useRef(null);
     const getConvertedData = (w_data: any) => {
         let c_data = [];
@@ -31,16 +31,16 @@ const BarChart: React.SFC<IProps> = (props) => {
         }
         return c_data;
     }
-    
+
     const c_data = getConvertedData(data.values);
     const cache = useRef(c_data);
-    
-    useEffect(() => drawChart(), [props]);
+
+    useEffect(() => drawChart(), [width, height, data]);
     const drawChart = () => {
         if (data == null) return;
         let curData = c_data;
         let prevData = cache.current;
-        if(curData.length != prevData.length || isCountChart ){
+        if (curData.length != prevData.length || isCountChart) {
             prevData = revisionPrevData();
         }
 
@@ -82,9 +82,9 @@ const BarChart: React.SFC<IProps> = (props) => {
             .selectAll('text')
             .attr('class', (d, i) => 'bar-x-text' + d + i)
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
-            .attr('opacity', (d: any, i) =>  i % step == 0 ? 1 : 0)
+            .attr('opacity', (d: any, i) => i % step == 0 ? 1 : 0)
             .style("font", "300 10px Arial")
-            .attr('text-anchor', curData.length > showLimit ? 'start' : 'middle')            
+            .attr('text-anchor', curData.length > showLimit ? 'start' : 'middle')
             .attr('transform', curData.length > showLimit ? 'rotate(45)' : 'rotate(0)');
         xArea
             .selectAll('path')
@@ -109,7 +109,7 @@ const BarChart: React.SFC<IProps> = (props) => {
 
         const tooltip = graphArea.append('g')
 
-        const bar_group = graphArea.append('g')            
+        const bar_group = graphArea.append('g')
             .selectAll('bar-group')
             .data(prevData)
             .enter().append("rect")
@@ -125,7 +125,7 @@ const BarChart: React.SFC<IProps> = (props) => {
                 // graphArea.select('.bar-x-text' + d.label + i + i).attr('opacity', 1);
                 tooltip.raise();
             })
-            .on("mouseout", (d:any, i) => {
+            .on("mouseout", (d: any, i) => {
                 // if(i % step != 0)
                 //     graphArea.select('.bar-x-text' + d.label + i + i).attr('opacity', 0);
                 tooltip.call(callout, null);
@@ -133,37 +133,39 @@ const BarChart: React.SFC<IProps> = (props) => {
 
         bar_group
             .data(curData)
-            .transition().duration(1000)            
+            .transition().duration(1000)
             .attr("y", (d: any, i) => y(d.value))
             .attr("height", (d: any) => Math.abs(rh - y(d.value)))
 
-        d3.select(svgRef.current)
-            .append("text")
-            .attr("x", margins.left)
-            .attr("y", margins.top)
-            .attr('dy', '-0.5em')
-            .attr('font-size', '16pt')
-            .attr('fill', 'black')
-            .style("text-anchor", "start")
-            .text(data.name)
+        if (height > SMALL_SIZEY) {
+            d3.select(svgRef.current)
+                .append("text")
+                .attr("x", margins.left)
+                .attr("y", margins.top)
+                .attr('dy', '-0.5em')
+                .attr('font-size', '16pt')
+                .attr('fill', 'black')
+                .style("text-anchor", "start")
+                .text(data.name)
 
-        d3.select(svgRef.current).append("text")
-            .attr("x", margins.left + width / 2)
-            .attr("y", height)
-            .attr('font-size', '12pt')
-            .attr('fill', 'black')
-            .style("text-anchor", "end")
-            .text(data.XAxis)
+            d3.select(svgRef.current).append("text")
+                .attr("x", margins.left + width / 2)
+                .attr("y", height)
+                .attr('font-size', '12pt')
+                .attr('fill', 'black')
+                .style("text-anchor", "end")
+                .text(data.XAxis)
 
-        d3.select(svgRef.current).append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("x", -height / 2)
-            .attr("y", 15)
-            .attr("dy", ".71em")
-            .attr('font-size', '12pt')
-            .attr('fill', 'black')
-            .style("text-anchor", "middle")
-            .text(data.YAxis)
+            d3.select(svgRef.current).append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", 15)
+                .attr("dy", ".71em")
+                .attr('font-size', '12pt')
+                .attr('fill', 'black')
+                .style("text-anchor", "middle")
+                .text(data.YAxis)
+        }
 
         const callout = (g: any, d: any, idx: any) => {
             if (!d) {
@@ -233,9 +235,9 @@ const BarChart: React.SFC<IProps> = (props) => {
         d3.select(svgRef.current).selectAll("*").remove();
         return { top: 30, left: ybox.width + 30, bottom: data.length > showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
     }
-    const revisionPrevData = () => {        
+    const revisionPrevData = () => {
         let rev_data = [];
-        for(let i = 0; i < c_data.length; i++){
+        for (let i = 0; i < c_data.length; i++) {
             rev_data.push({
                 label: c_data[i].label,
                 value: 0,

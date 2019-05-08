@@ -127,6 +127,60 @@ export function compact(layout: Layout[], compactType: string, cols: number) {
   return out;
 }
 
+export function sumOfWidth(layout: Layout[]) {
+  let sum = 0;
+  for (let i = 0, len = layout.length; i < len; i++) {
+    sum += layout[i].w;
+  }
+
+  return sum;
+}
+
+export function new_compact(layout: Layout[], compactType: string, cols: number) {
+  // We go through the items by row and column.
+  const sorted = sortLayoutItems(layout, 'vertical');
+  // Holding for new items.
+  const out = Array(layout.length);
+  const lastY = sorted[sorted.length - 1].y;
+
+  let nRowVal = 0;
+  for (let i = 0; i <= lastY; i++) {
+    let rows = getItemsInSameRowValue(sorted, i);
+    if (rows.length == 0) {
+
+    } else {
+      let avgWidth = Math.floor(cols / rows.length);
+      let eWidth = cols % rows.length;
+      let widthOfRow = sumOfWidth(rows);
+      let xpos = 0;
+      for (let j = 0, len = rows.length; j < len; j++) {
+        let l = cloneLayoutItem(rows[j]);
+
+        l.x = xpos;
+        if (widthOfRow != cols) {
+          if (j == 0) {
+            l.w = avgWidth + eWidth;
+            xpos += avgWidth + eWidth;
+          } else {
+            l.w = avgWidth;
+            xpos += avgWidth;
+          }
+        } else {
+          xpos += l.w;
+        }
+
+        l.y = nRowVal;
+        out[layout.indexOf(rows[j])] = l;
+        l.moved = false;
+      }
+
+      nRowVal++;
+    }
+  }
+
+  return out;
+}
+
 const heightWidth: RefStringObject = { x: 'w', y: 'h' };
 /**
  * Before moving item down, it will check if the movement will cause collisions and move those items down before.
@@ -242,6 +296,25 @@ export function getLayoutItem(layout: Layout[], id: string) {
 }
 
 /**
+ * Make a layout item by ID. Used so we can override later on if necessary.
+ *
+ * @param  {Array}  layout Layout array.
+ * @param  {String} id     ID
+ * @return {LayoutItem}    Item at ID.
+ */
+export function createLayoutItem(layout: Layout[], newLayoutItem: Layout) {
+  layout.unshift(newLayoutItem);
+}
+
+export function removeLayoutItem(layout: Layout[], id: string) {
+  for (let i = 0, len = layout.length; i < len; i++) {
+    if (layout[i].i === id) {
+      layout.splice(i, 1);
+      return;
+    }
+  }
+}
+/**
  * Returns the first item this layout collides with.
  * It doesn't appear to matter which order we approach this from, although
  * perhaps that is the wrong thing to do.
@@ -257,6 +330,22 @@ export function getFirstCollision(layout: Layout[], layoutItem: Layout) {
 
 export function getAllCollisions(layout: Layout[], layoutItem: Layout) {
   return layout.filter(l => collides(l, layoutItem));
+}
+
+export function getItemsInSameRow(layout: Layout[], layoutItem: Layout) {
+  return layout.filter(l => l.y == layoutItem.y);
+}
+
+export function getItemsInSameRowValue(layout: Layout[], y: number) {
+  return layout.filter(l => l.y == y);
+}
+
+export function getItemsInSamePosition(layout: Layout[], layoutItem: Layout) {
+  return layout.filter(l => l.y == layoutItem.y && l.x == layoutItem.x);
+}
+
+export function getItemsInBelow(layout: Layout[], layoutItem: Layout) {
+  return layout.filter(l => l.y >= layoutItem.y && l.i != layoutItem.i);
 }
 
 /**
@@ -512,17 +601,17 @@ export function synchronizeLayoutWithChildren(
         const fakeItem: Layout = {
           x: 0,
           y: bottom(layout),
-          w: 1,
+          w: 12,
           h: 1,
           i: String(child.key),
-          minW: 0,
-          maxW: 0,
-          minH: 0,
-          maxH: 0,
+          minW: 3,
+          maxW: 12,
+          minH: 1,
+          maxH: 1,
           moved: false,
           static: false,
-          isDraggable: false,
-          isResizable: false,
+          isDraggable: true,
+          isResizable: true,
         };
         // Nothing provided: ensure this is added to the bottom
         layout[i] = cloneLayoutItem(fakeItem);
@@ -532,7 +621,7 @@ export function synchronizeLayoutWithChildren(
 
   // Correct the layout.
   layout = correctBounds(layout, { cols });
-  layout = compact(layout, compactType, cols);
+  layout = new_compact(layout, compactType, cols);
 
   return layout;
 }

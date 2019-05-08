@@ -608,6 +608,14 @@ const Glyphs: { [key: string]: any } = {
       </svg>
     ),
   },
+  THREE_DOT: {
+    viewBox: '0 0 4 16',
+    data: (
+      <svg width="4" height="16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 2c0-1.1-.9-2-2-2S0 .9 0 2s.9 2 2 2 2-.9 2-2zm0 12c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zm0-6c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2z" fill="#616177" fillRule="nonzero" />
+      </svg>
+    )
+  }
 };
 
 export default Glyphs;

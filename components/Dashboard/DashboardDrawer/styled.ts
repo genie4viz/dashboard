@@ -9,6 +9,7 @@ export const ButtonStyle = (theme: any) => css`
 
 export const PanelStyle = css`
   margin-top: 24px;
+  cursor: pointer;
 `;
 
 export const ContentScroll = styled.div`

@@ -1,9 +1,9 @@
 
 import { IChartData } from '.';
 
-export const FakeData15: IChartData[] = [
+export const FakeDataInventory: IChartData[] = [
     {
-        "key": "1",
+        "key": "i1",
         "type": 'BAR',
         "name": 'Bar Chart',
         "XAxis": "Revenue",
@@ -35,7 +35,7 @@ export const FakeData15: IChartData[] = [
         { "label": "Levey", "value": 186, "color": "#34f43e" },
         { "label": "Thayne", "value": 63, "color": "#5b4f2c" }]
     }, {
-        "key": "2",
+        "key": "i2",
         "type": 'PIE',
         "name": 'Pie Chart',
         "XAxis": "Revenue",
@@ -56,7 +56,7 @@ export const FakeData15: IChartData[] = [
         { "label": "Levey", "value": 186, "color": "#34f43e" },
         { "label": "Thayne", "value": 63, "color": "#5b4f2c" }]
     }, {
-        "key": "3",
+        "key": "i3",
         "type": 'LINE',
         "name": 'Line Chart',
         "XAxis": "Revenue",
