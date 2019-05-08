@@ -82,7 +82,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             .selectAll('text')
             .attr('class', (d, i) => 'line-x-text' + d + i)
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
-            .attr('opacity', (d: any, i) => i % step == 0 ? 1 : 0)
+            .attr('opacity', (d: any, i) => i % step != 0 || height < SMALL_SIZEY ? 0 : 1)
             .style("font", "300 10px Arial")
             .attr('text-anchor', showLimit < curData.length ? 'start' : 'middle')
             .attr('transform', showLimit < curData.length ? 'rotate(45)' : 'rotate(0)');
@@ -96,6 +96,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             .attr('class', 'y axis')
             .call(yAxis)
             .selectAll('text')
+            .attr('opacity', (d: any) => height < SMALL_SIZEY ? 0 : 1)
             .style("font", "300 10px Arial")
             .select('.domain')
             .remove();
@@ -144,16 +145,19 @@ const LineChart: React.SFC<IProps> = (props) => {
         dot_group
             .data(curData)
             .on("mouseover", (d: any, i: any) => {
-                d3.select('.dot' + idx_str + i).attr('r', 5);
-                tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth() / 2) + ',' + y(d.value) + ')').call(callout, d, i);
-                // graphArea.select('.line-x-text' + d.label + i).attr('opacity', 1);
-                tooltip.raise();
+                if(height > SMALL_SIZEY){
+                    d3.select('.dot' + idx_str + i).attr('r', 5);
+                    tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth() / 2) + ',' + y(d.value) + ')').call(callout, d, i);
+                    // graphArea.select('.line-x-text' + d.label + i).attr('opacity', 1);
+                    tooltip.raise();
+                }
             })
-            .on("mouseout", (d: any, i: any) => {
+            .on("mouseout", (d: any, i: any) => {                
                 d3.select('.dot' + idx_str + i).attr('r', 3);
                 // if(i % step != 0)
                 //     graphArea.select('.line-x-text' + d.label + i).attr('opacity', 0);
                 tooltip.call(callout, null);
+                    
             })
             .transition()
             .duration(1000)

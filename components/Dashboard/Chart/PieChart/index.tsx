@@ -36,6 +36,7 @@ const PieChart: React.SFC<IProps> = (props) => {
     useEffect(() => drawChart(), [width, height, data]);
 
     const drawChart = () => {
+        
         if (data == null) return;
         const curData = createPie(data.values);
         const prevData = createPie(cache.current);
@@ -61,8 +62,10 @@ const PieChart: React.SFC<IProps> = (props) => {
         path
             .attr("class", "arc")
             .on("mouseover", (d: any) => {
-                tooltip.attr('transform', "translate(" + createLabelArc.centroid(d) + ")").call(callout, d);
-                tooltip.raise();
+                if(height > SMALL_SIZEY){
+                    tooltip.attr('transform', "translate(" + createLabelArc.centroid(d) + ")").call(callout, d);
+                    tooltip.raise();
+                }
             })
             .on("mouseout", () => tooltip.call(callout, null))
             .attr("fill", (d: any) => d.data.color)
@@ -78,7 +81,7 @@ const PieChart: React.SFC<IProps> = (props) => {
                 .attr("text-anchor", "middle")
                 .style("fill", "white")
                 .style("font-size", '10pt')
-                .transition()
+                // .transition()
                 .attr("transform", (d: any) => `translate(${createLabelArc.centroid(d)})`)
                 .text((d: any) => d.data.label)
             if (showValue) {

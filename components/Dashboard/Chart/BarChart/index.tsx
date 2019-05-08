@@ -82,7 +82,7 @@ const BarChart: React.SFC<IProps> = (props) => {
             .selectAll('text')
             .attr('class', (d, i) => 'bar-x-text' + d + i)
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
-            .attr('opacity', (d: any, i) => i % step == 0 ? 1 : 0)
+            .attr('opacity', (d: any, i) => i % step != 0 || height < SMALL_SIZEY ? 0 : 1)
             .style("font", "300 10px Arial")
             .attr('text-anchor', curData.length > showLimit ? 'start' : 'middle')
             .attr('transform', curData.length > showLimit ? 'rotate(45)' : 'rotate(0)');
@@ -96,6 +96,7 @@ const BarChart: React.SFC<IProps> = (props) => {
             .attr('class', 'y axis')
             .call(yAxis)
             .selectAll('text')
+            .attr('opacity', (d: any) => height < SMALL_SIZEY ? 0 : 1)
             .style("font", "300 10px Arial")
             .select('.domain')
             .remove();
@@ -121,9 +122,11 @@ const BarChart: React.SFC<IProps> = (props) => {
             .attr("height", (d: any) => Math.abs(rh - y(d.value)))
             .attr('cursor', 'pointer')
             .on("mouseover", (d: any, i) => {
-                tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth()) + ',' + (y(d.value)) + ')').call(callout, d, i);
-                // graphArea.select('.bar-x-text' + d.label + i + i).attr('opacity', 1);
-                tooltip.raise();
+                if(height > SMALL_SIZEY){
+                    tooltip.attr('transform', 'translate(' + (x(d.label + i) + x.bandwidth()) + ',' + (y(d.value)) + ')').call(callout, d, i);
+                    // graphArea.select('.bar-x-text' + d.label + i + i).attr('opacity', 1);
+                    tooltip.raise();
+                }
             })
             .on("mouseout", (d: any, i) => {
                 // if(i % step != 0)
