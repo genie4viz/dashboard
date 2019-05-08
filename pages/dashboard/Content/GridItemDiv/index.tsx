@@ -38,7 +38,7 @@ class GridItemDiv extends React.Component<IProps, {}> {
                 onMouseDown={onMouseDown} onMouseUp={onMouseUp} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 {
                     chart.data.type === "PIE" &&
-                    <PieChart data={chart.data} idx={index} width={width} height={height} showValue={chart.showValue} showLimit={25} />
+                    <PieChart data={chart.data} idx={index} width={width} height={height} showLimit={25} />
                 }
                 {
                     chart.data.type === "BAR" &&

@@ -4,7 +4,7 @@ import { IChartData } from '..';
 
 interface IProps {
     data: IChartData;
-    showValue: boolean;
+    showValue?: boolean;
     idx?: number;
     showLimit: number;
     width: number;
@@ -80,10 +80,17 @@ const PieChart: React.SFC<IProps> = (props) => {
             label
                 .attr("text-anchor", "middle")
                 .style("fill", "white")
-                .style("font-size", '10pt')
-                // .transition()
-                .attr("transform", (d: any) => `translate(${createLabelArc.centroid(d)})`)
-                .text((d: any) => d.data.label)
+                .style("font-size", '8pt')                
+                .attr("transform", (d: any) => {
+                    let degree = ((d.endAngle - d.startAngle)/2 + d.startAngle) * (180/Math.PI);
+                    console.log(degree)
+                    if(degree > 180)
+                        return `translate(${createLabelArc.centroid(d)}) rotate(${ degree + 90})`;
+                    else
+                        return `translate(${createLabelArc.centroid(d)}) rotate(${ degree - 90})`;
+                })
+                .attr("opacity", (d: any) => (d.endAngle - d.startAngle) < 0.3 ? 0 : 1)
+                .text((d: any) => d.data.label)                
             if (showValue) {
                 const value = groupWithUpdate
                     .append("text")
