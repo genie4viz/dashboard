@@ -49,7 +49,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             rh = height - margins.top - margins.bottom;
         let min: number = 0,// d3.min
             max: any = d3.max(curData, (d: any) => d.value),
-            step = Math.floor(curData.length / showLimit);
+            step = Math.ceil(curData.length / 25);
 
         let x: any = d3
             .scaleBand()
@@ -84,8 +84,8 @@ const LineChart: React.SFC<IProps> = (props) => {
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
             .attr('opacity', (d: any, i) => i % step != 0 || height < SMALL_SIZEY ? 0 : 1)
             .style("font", "300 10px Arial")
-            .attr('text-anchor', showLimit < curData.length ? 'start' : 'middle')
-            .attr('transform', showLimit < curData.length ? 'rotate(45)' : 'rotate(0)');
+            .attr('text-anchor', 1.1*width/showLimit < curData.length ? 'start' : 'middle')
+            .attr('transform',1.1*width/ showLimit < curData.length ? 'rotate(45)' : 'rotate(0)');
         xArea
             .selectAll('path')
             .attr('opacity', 0)
@@ -152,7 +152,8 @@ const LineChart: React.SFC<IProps> = (props) => {
                     tooltip.raise();
                 }
             })
-            .on("mouseout", (d: any, i: any) => {                
+            .on("mouseout", (d: any, i: any) => {
+                
                 d3.select('.dot' + idx_str + i).attr('r', 3);
                 // if(i % step != 0)
                 //     graphArea.select('.line-x-text' + d.label + i).attr('opacity', 0);
@@ -179,6 +180,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             d3.select(svgRef.current).append("text")
                 .attr("x", margins.left + width / 2)
                 .attr("y", height)
+                .attr("dy", "-0.2em")
                 .attr('font-size', '12pt')
                 .attr('fill', 'black')
                 .style("text-anchor", "end")
@@ -261,7 +263,7 @@ const LineChart: React.SFC<IProps> = (props) => {
         let xbox = d3.select(svgRef.current).select('.measure_x').node().getBBox();
         let ybox = d3.select(svgRef.current).select('.measure_y').node().getBBox();
         d3.select(svgRef.current).selectAll("*").remove();
-        return { top: 30, left: ybox.width + 30, bottom: data.length > showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
+        return { top: 30, left: ybox.width + 30, bottom: data.length > 1.1 * width/showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
     }
     const revisionPrevData = () => {
         let rev_data = [];

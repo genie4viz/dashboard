@@ -37,6 +37,7 @@ const BarChart: React.SFC<IProps> = (props) => {
 
     useEffect(() => drawChart(), [width, height, data]);
     const drawChart = () => {
+        console.log(width, 'barchart' + idx)
         if (data == null) return;
         let curData = c_data;
         let prevData = cache.current;
@@ -75,7 +76,7 @@ const BarChart: React.SFC<IProps> = (props) => {
         graphArea.select('.xArea').remove();
         let xArea = graphArea.append('g').attr('class', 'xArea')
             .attr('transform', "translate(0," + rh + ")");
-        let step = Math.floor(c_data.length / showLimit);
+        let step = Math.ceil(c_data.length /25);
         xArea
             .attr('class', 'x axis')
             .call(xAxis)
@@ -84,8 +85,8 @@ const BarChart: React.SFC<IProps> = (props) => {
             .text((d: any, i) => d.substr(0, d.length - i.toString().length))
             .attr('opacity', (d: any, i) => i % step != 0 || height < SMALL_SIZEY ? 0 : 1)
             .style("font", "300 10px Arial")
-            .attr('text-anchor', curData.length > showLimit ? 'start' : 'middle')
-            .attr('transform', curData.length > showLimit ? 'rotate(45)' : 'rotate(0)');
+            .attr('text-anchor', curData.length > (1.1*width / showLimit) ? 'start' : 'middle')
+            .attr('transform', curData.length > (1.1*width / showLimit) ? 'rotate(45)' : 'rotate(0)');
         xArea
             .selectAll('path')
             .attr('opacity', 0)
@@ -154,6 +155,7 @@ const BarChart: React.SFC<IProps> = (props) => {
             d3.select(svgRef.current).append("text")
                 .attr("x", margins.left + width / 2)
                 .attr("y", height)
+                .attr("dy", "-0.2em")
                 .attr('font-size', '12pt')
                 .attr('fill', 'black')
                 .style("text-anchor", "end")
@@ -236,7 +238,7 @@ const BarChart: React.SFC<IProps> = (props) => {
         let xbox = d3.select(svgRef.current).select('.measure_x').node().getBBox();
         let ybox = d3.select(svgRef.current).select('.measure_y').node().getBBox();
         d3.select(svgRef.current).selectAll("*").remove();
-        return { top: 30, left: ybox.width + 30, bottom: data.length > showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
+        return { top: 30, left: ybox.width + 30, bottom: data.length > (1.1 * width / showLimit) ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
     }
     const revisionPrevData = () => {
         let rev_data = [];

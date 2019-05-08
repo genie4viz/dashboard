@@ -1,7 +1,7 @@
 
 import { IChartData } from '.';
 
-export const FakeData: IChartData[] = [
+export const FakeData300: IChartData[] = [
     {
         "key": "1",
         "type": 'BAR',
