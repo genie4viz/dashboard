@@ -82,8 +82,7 @@ const PieChart: React.SFC<IProps> = (props) => {
                 .style("fill", "white")
                 .style("font-size", '8pt')                
                 .attr("transform", (d: any) => {
-                    let degree = ((d.endAngle - d.startAngle)/2 + d.startAngle) * (180/Math.PI);
-                    console.log(degree)
+                    let degree = ((d.endAngle - d.startAngle)/2 + d.startAngle) * (180/Math.PI);                    
                     if(degree > 180)
                         return `translate(${createLabelArc.centroid(d)}) rotate(${ degree + 90})`;
                     else
@@ -97,7 +96,14 @@ const PieChart: React.SFC<IProps> = (props) => {
                     .attr('class', 'pie-value-text')
                     .merge(groupWithData.select(".pie-value-text"));
                 value
-                    .attr("transform", (d: any) => `translate(${createLabelArc.centroid(d)})`)
+                    .attr("transform", (d: any) => {
+                        let degree = ((d.endAngle - d.startAngle)/2 + d.startAngle) * (180/Math.PI);                        
+                        if(degree > 180)
+                            return `translate(${createLabelArc.centroid(d)}) rotate(${ degree + 90})`;
+                        else
+                            return `translate(${createLabelArc.centroid(d)}) rotate(${ degree - 90})`;
+                    })
+                    .attr("opacity", (d: any) => (d.endAngle - d.startAngle) < 0.3 ? 0 : 1)
                     .attr('fill', "white")
                     .attr('dy', '1em')
                     .attr('font-size', '10pt')

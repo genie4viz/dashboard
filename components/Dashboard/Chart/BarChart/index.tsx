@@ -36,8 +36,7 @@ const BarChart: React.SFC<IProps> = (props) => {
     const cache = useRef(c_data);
 
     useEffect(() => drawChart(), [width, height, data]);
-    const drawChart = () => {
-        console.log(width, 'barchart' + idx)
+    const drawChart = () => {        
         if (data == null) return;
         let curData = c_data;
         let prevData = cache.current;

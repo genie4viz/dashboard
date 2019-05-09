@@ -8,6 +8,7 @@ import LineChart from '@app/components/Dashboard/Chart/LineChart';
 export interface IProps {
     className?: string,
     key: string,
+    index: number,
     width: number,
     height: number,
     chart: IChartGraph,
@@ -38,15 +39,15 @@ class GridItemDiv extends React.Component<IProps, {}> {
                 onMouseDown={onMouseDown} onMouseUp={onMouseUp} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
                 {
                     chart.data.type === "PIE" &&
-                    <PieChart data={chart.data} idx={index} width={width} height={height} showLimit={25} />
+                    <PieChart data={chart.data} idx={index} width={width} height={height} showValue={chart.showValue} showLimit={25} />
                 }
                 {
                     chart.data.type === "BAR" &&
-                    <BarChart data={chart.data} idx={index} width={width} height={height} isCountChart={chart.isCountChart} showLimit={70} />
+                    <BarChart data={chart.data} idx={index} width={width} height={height} isCountChart={chart.isCountChart} showLimit={60} />
                 }
                 {
                     chart.data.type === "LINE" &&
-                    <LineChart data={chart.data} idx={index} width={width} height={height} isCountChart={chart.isCountChart} showLimit={70} />
+                    <LineChart data={chart.data} idx={index} width={width} height={height} isCountChart={chart.isCountChart} showLimit={60} />
                 }
                 <SubMenu top={10} right={20} onEdit={() => { onEdit(chart.data.key); }} onRemove={() => { onRemove(chart.data.key); }}></SubMenu>
             </div >
