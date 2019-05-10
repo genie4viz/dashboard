@@ -15,7 +15,6 @@ const PieChart: React.SFC<IProps> = (props) => {
     const { data, showValue, idx, showLimit, width, height } = props,
         idx_str = idx != null ? idx : '',
         radius = Math.min(width, height) / 2;
-
     const SMALL_SIZEY = 200;
     const graphRef = useRef(null);
     const cache = useRef(data.values);
@@ -33,19 +32,23 @@ const PieChart: React.SFC<IProps> = (props) => {
         .innerRadius(radius * 0.4)
         .outerRadius(radius - 10);
 
-    useEffect(() => drawChart(), [width, height, data]);
+    useEffect(() => drawChart(true), [width, height]);
+    useEffect(() => drawChart(false), [data]);
 
-    const drawChart = () => {
-        
+    const drawChart = (resizable: boolean) => {        
         if (data == null) return;
         const curData = createPie(data.values);
         const prevData = createPie(cache.current);
 
         const group = d3.select(graphRef.current);
+        if(resizable){
+            group.selectAll("*").remove();
+        }
         const tooltip = group.append('g');
+        
         const groupWithData = group.selectAll("g.arc").data(curData);
         groupWithData.exit().remove();
-
+      
         const groupWithUpdate = groupWithData
             .enter()
             .append("g")
@@ -111,7 +114,7 @@ const PieChart: React.SFC<IProps> = (props) => {
                     .text((d: any) => (d.data.value));
             }
         }
-
+      
         const callout = (g: any, d: any) => {
             if (!d) {
                 g.selectAll("*").remove();

@@ -3,8 +3,6 @@ import { isEqual } from 'lodash';
 import classNames from 'classnames';
 import { IGridItemDragEvent } from './GridItem';
 import GridItem from './GridItem';
-import Placeholder from './Placeholder';
-import { DraggableEvent } from 'react-draggable';
 import { Layouts, Layout, ReactGridLayoutProps } from 'react-grid-layout';
 
 import '../../../node_modules/react-grid-layout/css/styles.css';
@@ -31,6 +29,12 @@ import {
 } from './utils';
 import { json } from 'd3';
 
+
+interface IProps extends ReactGridLayoutProps {
+    isNewOver: boolean;
+    dragX: number;
+    dragY: number;
+}
 
 interface IProps extends ReactGridLayoutProps {
     isNewOver: boolean;
@@ -200,6 +204,15 @@ export default class GridLayout extends React.Component<IProps, IState> {
         const { cols } = this.props;
         const l = getLayoutItem(layout, i);
         if (!l) return;
+        if (x == -1 && y == -1) {
+            this.setState({
+                isActiveDrag: false,
+                isAddBlock: false,
+                activeDrag: {} as Layout,
+                isDroppable: false
+            });
+            return;
+        }
 
         let isDroppable = true;
         // Create placeholder (display only)
@@ -220,15 +233,19 @@ export default class GridLayout extends React.Component<IProps, IState> {
                 isDroppable = false;
             }
             let layoutsInSameRowRight = layoutsInSameRow.filter(
-                layoutItem => layoutItem.x >= placeholder.x
-            ).sort(
-                (a, b) => a.x - b.x
+                layoutItem => layoutItem.x == placeholder.x
             );
 
             if (layoutsInSameRowRight.length > 0) {
                 placeholder.x = layoutsInSameRowRight[0].x;
-            } else {
-                placeholder.x = cols;
+            } else if (placeholder.x != cols) {
+                this.setState({
+                    isActiveDrag: false,
+                    isAddBlock: false,
+                    activeDrag: {} as Layout,
+                    isDroppable: false
+                });
+                return;
             }
         }
 

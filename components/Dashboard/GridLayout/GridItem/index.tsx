@@ -111,7 +111,7 @@ interface IState {
 
 const PLACEHOLDER_WIDTH: number = 50;
 const PLACEHOLDER_HEIGHT: number = 50;
-const MAX_TRANSCOUNT: number = 5;
+const MAX_TRANSCOUNT: number = 2;
 
 class GridItem extends React.Component<IProps, IState> {
     static defaultProps = {
@@ -145,29 +145,32 @@ class GridItem extends React.Component<IProps, IState> {
     componentWillReceiveProps(nextProps: IProps) {
         if ((nextProps.x != this.props.x) || (nextProps.y != this.props.y) ||
             (nextProps.w != this.props.w) || (nextProps.h != this.props.h)) {
-            this.setState({
-                isTransient: true,
-                transCount: 0,
-                orgX: this.props.x,
-                orgY: this.props.y,
-                orgW: this.props.w,
-                orgH: this.props.h,
-            });
 
-            var that = this;
-            var transTimer = setInterval(function () {
-                let { transCount } = that.state;
-                if (transCount == MAX_TRANSCOUNT) {
-                    that.setState({
-                        isTransient: false
-                    })
-                    clearInterval(transTimer);
-                } else {
-                    that.setState({
-                        transCount: transCount + 1
-                    })
-                }
-            }, 20);
+            if (!this.props.isCustomPlaceholder) {
+                this.setState({
+                    isTransient: true,
+                    transCount: 0,
+                    orgX: this.props.x,
+                    orgY: this.props.y,
+                    orgW: this.props.w,
+                    orgH: this.props.h,
+                });
+
+                var that = this;
+                var transTimer = setInterval(function () {
+                    let { transCount } = that.state;
+                    if (transCount == MAX_TRANSCOUNT) {
+                        that.setState({
+                            isTransient: false
+                        })
+                        clearInterval(transTimer);
+                    } else {
+                        that.setState({
+                            transCount: transCount + 1
+                        })
+                    }
+                }, 20);
+            }
         }
     }
     // Helper for generating column width
@@ -276,8 +279,10 @@ class GridItem extends React.Component<IProps, IState> {
         x = Math.max(Math.min(x, cols - w), 0);
         y = Math.max(Math.min(y, maxRows - h), 0); */
 
-        let x = Math.floor((left - margin[0]) / (colWidth + margin[0]));
+        let x = Math.round((left - margin[0]) / (colWidth + margin[0]));
         let y = Math.floor((top - margin[1]) / (rowHeight + margin[1]));
+        let offX = (left - margin[0]) % (colWidth + margin[0]);
+        let offY = (top - margin[1]) % (rowHeight + margin[1]);
         let width = 1;
         let height = 1;
 
@@ -285,13 +290,15 @@ class GridItem extends React.Component<IProps, IState> {
         x = Math.max(Math.min(x, cols), 0);
         y = Math.max(Math.min(y, maxRows), 0);
 
-        if ((top - margin[1]) % (rowHeight + margin[1]) > rowHeight - PLACEHOLDER_HEIGHT / 2) {
+        if (offY > rowHeight - PLACEHOLDER_HEIGHT / 4) {
             width = cols;
             y = y + 1;
-        } else if ((top - margin[1]) % (rowHeight + margin[1]) < PLACEHOLDER_HEIGHT / 2) {
+        } else if (offY < PLACEHOLDER_HEIGHT / 4) {
             width = cols;
+        } else if (offX < colWidth - PLACEHOLDER_WIDTH / 4 && offX > PLACEHOLDER_WIDTH / 4) {
+            x = -1;
+            y = -1;
         }
-
 
         return { x, y, width, height };
     }

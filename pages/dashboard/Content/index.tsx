@@ -20,7 +20,6 @@ import { ICategory } from '@app/components/Dashboard/DashboardDrawer/Category';
 import { FakeData } from '@app/components/Dashboard/Chart/fake';
 import { FakeData1 } from '@app/components/Dashboard/Chart/fake1';
 import { FakeData15 } from '@app/components/Dashboard/Chart/fake15';
-import { FakeData300 } from '@app/components/Dashboard/Chart/fake300';
 import { FakeDataInventory } from '@app/components/Dashboard/Chart/fakeInventory';
 import { IChartData } from '@app/components/Dashboard/Chart';
 import DropBox from '@app/components/Dashboard/DashboardDrawer/DropBox';
@@ -206,9 +205,9 @@ class DashboardContent extends React.Component<IProps, IState> {
         }
     }
 
-    private processChart(chart: IChartGraph, index: number) {
+    private processChart(chart: IChartGraph) {
         return (
-            <GridItemDiv key={chart.key} index={index} width={chart.width} height={chart.height} chart={chart} onEdit={this.onEditBlock} onRemove={this.onRemoveBlock} />
+            <GridItemDiv key={chart.key} width={chart.width} height={chart.height} chart={chart} onEdit={this.onEditBlock} onRemove={this.onRemoveBlock} />
         );
     }
 
@@ -298,7 +297,7 @@ class DashboardContent extends React.Component<IProps, IState> {
                 >
                 </DashboardHeader>
                 <div style={{ display: 'flex' }}>
-                    <Button onClick={() => { this.fake = FakeData300; this.setFakeData(); }}>
+                    <Button onClick={() => { this.fake = FakeData15; this.setFakeData(); }}>
                         ChangeData
                     </Button>
                     <Button onClick={() => { this.fake = FakeData1; this.setFakeData(); }}>
@@ -336,7 +335,7 @@ class DashboardContent extends React.Component<IProps, IState> {
                         dragY={this.dragY}
                     >
                         {dashboardBlocks.map((chart, index) =>
-                            this.processChart(chart, index)
+                            this.processChart(chart)
                         )}
                     </GridLayout>
                 </DropBox>

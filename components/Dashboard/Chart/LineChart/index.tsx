@@ -33,8 +33,8 @@ const LineChart: React.SFC<IProps> = (props) => {
     }
     const c_data = getConvertedData(data.values);
     const cache = useRef(c_data);
-
-    useEffect(() => drawChart(), [width, height, data]);
+  
+    useEffect(() => drawChart(), [width, height, data]);    
 
     const drawChart = () => {
         if (c_data == null) return;
@@ -72,7 +72,7 @@ const LineChart: React.SFC<IProps> = (props) => {
             .append("g").attr('class', 'graphArea')
             .attr('transform', "translate(" + (margins.left) + "," + (margins.top) + ")")
         const tooltip = graphArea.append('g');
-
+      
         graphArea.select('.xArea').remove();
         let xArea = graphArea.append('g').attr('class', 'xArea')
             .attr('transform', "translate(0," + rh + ")")
@@ -263,7 +263,8 @@ const LineChart: React.SFC<IProps> = (props) => {
         let xbox = d3.select(svgRef.current).select('.measure_x').node().getBBox();
         let ybox = d3.select(svgRef.current).select('.measure_y').node().getBBox();
         d3.select(svgRef.current).selectAll("*").remove();
-        return { top: 30, left: ybox.width + 30, bottom: data.length > 1.1 * width/showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
+        return height > SMALL_SIZEY ? { top: 30, left: ybox.width + 30, bottom: data.length > 1.1 * width/showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width }
+                                    : { top: 10, left: 10, bottom: 10, right: 10 }
     }
     const revisionPrevData = () => {
         let rev_data = [];

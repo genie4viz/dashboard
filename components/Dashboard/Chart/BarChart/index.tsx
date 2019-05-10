@@ -109,7 +109,7 @@ const BarChart: React.SFC<IProps> = (props) => {
             .attr('stroke', '#ccc');
 
         const tooltip = graphArea.append('g')
-
+        
         const bar_group = graphArea.append('g')
             .selectAll('bar-group')
             .data(prevData)
@@ -237,7 +237,8 @@ const BarChart: React.SFC<IProps> = (props) => {
         let xbox = d3.select(svgRef.current).select('.measure_x').node().getBBox();
         let ybox = d3.select(svgRef.current).select('.measure_y').node().getBBox();
         d3.select(svgRef.current).selectAll("*").remove();
-        return { top: 30, left: ybox.width + 30, bottom: data.length > (1.1 * width / showLimit) ? xbox.width + 15 : xbox.height + 15, right: ybox.width };
+        return height > SMALL_SIZEY ? { top: 30, left: ybox.width + 30, bottom: data.length > 1.1 * width/showLimit ? xbox.width + 15 : xbox.height + 15, right: ybox.width }
+                                    : { top: 10, left: 10, bottom: 10, right: 10 }
     }
     const revisionPrevData = () => {
         let rev_data = [];
